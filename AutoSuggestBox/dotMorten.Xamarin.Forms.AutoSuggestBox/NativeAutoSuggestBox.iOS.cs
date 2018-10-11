@@ -34,6 +34,7 @@ namespace dotMorten.Xamarin.Forms
             inputText.EditingChanged += InputText_EditingChanged;
             inputText.EndedWithReason += InputText_EndedWithReason;
             inputText.ReturnKeyType = UIKit.UIReturnKeyType.Search;
+            inputText.AutocorrectionType = UITextAutocorrectionType.No;
 
             AddSubview(inputText);
             inputText.TopAnchor.ConstraintEqualTo(TopAnchor).Active = true;
@@ -89,7 +90,7 @@ namespace dotMorten.Xamarin.Forms
             {
                 if (value && selectionList.Superview == null && selectionList.Source != null && selectionList.Source.RowsInSection(selectionList, 0) > 0)
                 {
-                    UIKit.UIApplication.SharedApplication.Windows[0].AddSubview(selectionList);
+                    GetVisibleViewController().Add(selectionList);                   
                     selectionList.TopAnchor.ConstraintEqualTo(inputText.BottomAnchor).Active = true;
                     selectionList.LeftAnchor.ConstraintEqualTo(inputText.LeftAnchor).Active = true;
                     selectionList.WidthAnchor.ConstraintEqualTo(inputText.WidthAnchor).Active = true;
@@ -100,6 +101,19 @@ namespace dotMorten.Xamarin.Forms
                 else if (!value && selectionList.Superview != null)
                     selectionList.RemoveFromSuperview();
             }
+        }
+
+        private UIViewController GetVisibleViewController()
+        {
+            var windows = UIApplication.SharedApplication.Windows;
+            foreach (var window in windows)
+            {
+                if (window.RootViewController != null)
+                {
+                    return window.RootViewController;
+                }
+            }
+            return null;
         }
 
         private void OnKeyboardHide(object sender, UIKeyboardEventArgs e)
